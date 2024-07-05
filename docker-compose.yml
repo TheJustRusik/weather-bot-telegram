@@ -1,0 +1,29 @@
+version: '3.8'
+name: weather-bot
+
+services:
+  main_database:
+    container_name: weather-bot-main-database
+    image: postgres:14.7-alpine
+    environment:
+      POSTGRES_USER: main_user
+      POSTGRES_PASSWORD: super_password
+      POSTGRES_DB: main_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - main-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+  weather-fetcher:
+    container_name: weather-bot-fetcher
+    build:
+      context: .
+      dockerfile: weather-fetcher/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - main_database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-database/main_db
+volumes:
+  main-db-data:

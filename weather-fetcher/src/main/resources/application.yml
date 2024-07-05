@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: weather-fetcher
+  datasource:
+    password: super_password
+    username: main_user
+    url: jdbc:postgresql://localhost:5432/main_db
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+open-weather:
+  key: your-api-key
