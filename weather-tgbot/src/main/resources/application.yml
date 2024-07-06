@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: weather-tgbot
+  datasource:
+    username: main_user
+    password: super_password
+    url: jdbc:postgresql://localhost:5432/main_db
+  jpa:
+    hibernate:
+      ddl-auto: update
+server:
+  port: 8081

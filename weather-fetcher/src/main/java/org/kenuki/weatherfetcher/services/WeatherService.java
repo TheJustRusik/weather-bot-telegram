@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.kenuki.weatherfetcher.models.OpenWeather3HoursPrediction;
 import org.kenuki.weatherfetcher.models.OpenWeatherObject;
 import org.kenuki.weatherfetcher.models.entities.Weather;
+import org.kenuki.weatherfetcher.repositories.LocationRepository;
 import org.kenuki.weatherfetcher.repositories.WeatherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,22 +25,30 @@ import java.util.Date;
 public class WeatherService {
     @Value("${open-weather.key}")
     String apiKey;
-    String city = "Almaty";
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final Logger log = LoggerFactory.getLogger(WeatherService.class);
     private final WeatherRepository weatherRepository;
+    private final LocationRepository locationRepository;
 
-    public WeatherService(WeatherRepository weatherRepository) {
+    public WeatherService(WeatherRepository weatherRepository, LocationRepository locationRepository) {
         this.weatherRepository = weatherRepository;
+        this.locationRepository = locationRepository;
     }
 
-    @Scheduled(cron = "0 0 * * * *")
+    /**
+    * <b>This method will run every day at 00:00</b>
+    */
+    @Scheduled(cron = "0 0 0 * * *")
     @Retryable(maxAttempts = Integer.MAX_VALUE, backoff = @Backoff(delay = 5000))
     public void fetchWeather() {
-
+        locationRepository.findAll().forEach(
+                location -> fetchLocationWeather(location.getName())
+        );
+    }
+    private void fetchLocationWeather(String location) {
         String url = "https://api.openweathermap.org/data/2.5/forecast?q="
-                      + city + "&appid=" + apiKey;
+                + location + "&appid=" + apiKey;
         log.info("Fetching weather for URL: {}", url);
         OpenWeatherObject response = restTemplate.getForObject(url, OpenWeatherObject.class);
 
