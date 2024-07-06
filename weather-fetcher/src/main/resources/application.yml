@@ -9,5 +9,9 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+  config:
+    import: keys.yml
 open-weather:
-  key: your-api-key
+  key: ${secret.open-weather-key}
+server:
+  port: 8080

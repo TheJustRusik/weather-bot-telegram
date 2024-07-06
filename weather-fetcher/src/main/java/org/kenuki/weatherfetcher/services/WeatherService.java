@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.kenuki.weatherfetcher.models.OpenWeather3HoursPrediction;
 import org.kenuki.weatherfetcher.models.OpenWeatherObject;
 import org.kenuki.weatherfetcher.models.entities.Weather;
+import org.kenuki.weatherfetcher.repositories.WeatherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,11 @@ public class WeatherService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final Logger log = LoggerFactory.getLogger(WeatherService.class);
+    private final WeatherRepository weatherRepository;
+
+    public WeatherService(WeatherRepository weatherRepository) {
+        this.weatherRepository = weatherRepository;
+    }
 
     @Scheduled(cron = "0 0 * * * *")
     @Retryable(maxAttempts = Integer.MAX_VALUE, backoff = @Backoff(delay = 5000))
@@ -48,7 +54,8 @@ public class WeatherService {
             weather.setWeather(weather3HBlock.getWeather().get(0).getMain());
             weather.setWeather_description(weather3HBlock.getWeather().get(0).getDescription());
             weather.setWind_speed(weather3HBlock.getWind().getSpeed());
-            weather.setDate(new Date(weather3HBlock.getDt_txt()));
+            weather.setDate(new Date(weather3HBlock.getDt()));
+            weatherRepository.save(weather);
         });
     }
 }

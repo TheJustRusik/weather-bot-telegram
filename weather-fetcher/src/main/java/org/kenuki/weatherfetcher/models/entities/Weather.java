@@ -1,9 +1,6 @@
 package org.kenuki.weatherfetcher.models.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -19,5 +16,6 @@ public class Weather {
     private String weather;
     private String weather_description;
     private Double wind_speed;
+    @Column()
     private Date date;
 }

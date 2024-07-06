@@ -2,8 +2,8 @@ version: '3.8'
 name: weather-bot
 
 services:
-  main_database:
-    container_name: weather-bot-main-database
+  weather_database:
+    container_name: weather-bot-database
     image: postgres:14.7-alpine
     environment:
       POSTGRES_USER: main_user
@@ -24,6 +24,6 @@ services:
     depends_on:
       - main_database
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-database/main_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
 volumes:
   main-db-data:

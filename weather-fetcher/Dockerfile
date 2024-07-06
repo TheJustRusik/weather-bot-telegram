@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ../weather-fetcher /app
 
-RUN ./gradlew bootJar --no-daemon
+RUN gradle bootJar --no-daemon
 
 FROM openjdk:17
 
