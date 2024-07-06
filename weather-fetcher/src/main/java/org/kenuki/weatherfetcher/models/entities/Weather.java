@@ -2,6 +2,7 @@ package org.kenuki.weatherfetcher.models.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.util.Date;
 
@@ -16,6 +17,6 @@ public class Weather {
     private String weather;
     private String weather_description;
     private Double wind_speed;
-    @Column()
+    @Column(columnDefinition = "timestamp")
     private Date date;
 }

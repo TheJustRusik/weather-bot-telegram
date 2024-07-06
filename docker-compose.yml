@@ -22,7 +22,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - main_database
+      - weather_database
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
 volumes:

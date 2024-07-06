@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
 import java.util.Date;
 
 
@@ -54,7 +55,9 @@ public class WeatherService {
             weather.setWeather(weather3HBlock.getWeather().get(0).getMain());
             weather.setWeather_description(weather3HBlock.getWeather().get(0).getDescription());
             weather.setWind_speed(weather3HBlock.getWind().getSpeed());
-            weather.setDate(new Date(weather3HBlock.getDt()));
+            weather.setDate(Date.from(
+                    Instant.ofEpochSecond(weather3HBlock.getDt()))
+            );
             weatherRepository.save(weather);
         });
     }
