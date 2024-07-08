@@ -34,8 +34,9 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    // https://mvnrepository.com/artifact/org.telegram/telegrambots
-    implementation 'org.telegram:telegrambots:6.9.7.1'
+
+    implementation 'org.telegram:telegrambots-springboot-longpolling-starter:7.7.0'
+    implementation 'org.telegram:telegrambots-client:7.7.0'
 
 }
 

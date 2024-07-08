@@ -8,5 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  config:
+    import: keys.yml
+telegram:
+  bot-key: ${secret.telegram-bot-key}
 server:
   port: 8081
