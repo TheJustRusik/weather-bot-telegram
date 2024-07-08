@@ -25,5 +25,15 @@ services:
       - weather_database
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+  weather-tgbot:
+    container_name: weather-telegram-bot
+    build:
+      context: .
+      dockerfile: weather-tgbot/Dockerfile
+    depends_on:
+      - weather_database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+
 volumes:
   main-db-data:
