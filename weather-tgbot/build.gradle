@@ -37,6 +37,8 @@ dependencies {
 
     implementation 'org.telegram:telegrambots-springboot-longpolling-starter:7.7.0'
     implementation 'org.telegram:telegrambots-client:7.7.0'
+    // https://mvnrepository.com/artifact/com.opencsv/opencsv
+    implementation 'com.opencsv:opencsv:5.9'
 
 }
 

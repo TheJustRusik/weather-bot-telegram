@@ -13,6 +13,8 @@ public class Location {
      * <b>This is city name</b>
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
 
 }

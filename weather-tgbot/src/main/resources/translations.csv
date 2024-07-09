@@ -1,0 +1,22 @@
+default,en,ru
+language,Language,Язык
+settings,Settings,Настройки
+information,Information,Информация
+hello_banner,"Hello!
+This is weather-bot by @TheJustRusik
+Now you can setup this bot!
+","Привет!
+Это weather-bot от @TheJustRusik!
+Тут ты можешь настроить его!"
+error,Sorry! Some error occurred.,Простите! Произошла ошибка.
+choose_language,Please choose language!,Пожалуйста выберите язык!
+english,English,English
+russian,Русский,Русский
+russian_selected,Russian language selected!,Выбран русский язык!
+english_selected,English language selected!,Выбран английский язык!
+your_settings,"These are all the current bot settings.
+To change a field, click on the corresponding button.","Это все текущие настройки бота.
+Чтобы изменить какое то поле, нажмите на соответсвующую кнопку."
+broadcasting,Weather broadcasting,Рассылка о погоде
+broadcast_time,Broadcasting hours,Время рассылки
+utc_delta,UTC difference,Разница UTC
