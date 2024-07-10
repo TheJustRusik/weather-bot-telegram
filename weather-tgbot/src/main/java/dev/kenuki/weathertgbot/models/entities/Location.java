@@ -3,6 +3,7 @@ package dev.kenuki.weathertgbot.models.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,6 +14,4 @@ public class Location {
     private Long id;
     private String name;
 
-    @ManyToMany(mappedBy = "locations")
-    private List<ChatSettings> chatSettings;
 }

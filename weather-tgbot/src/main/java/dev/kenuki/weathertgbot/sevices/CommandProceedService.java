@@ -1,6 +1,7 @@
 package dev.kenuki.weathertgbot.sevices;
 
 import dev.kenuki.weathertgbot.models.entities.ChatSettings;
+import dev.kenuki.weathertgbot.models.entities.Location;
 import dev.kenuki.weathertgbot.repositories.ChatSettingsRepository;
 import dev.kenuki.weathertgbot.telegram.TelegramBot;
 import dev.kenuki.weathertgbot.utils.ChatLocalization;
@@ -90,7 +91,7 @@ public class CommandProceedService {
                     + chatLocalization.tr("broadcasting", settings.getLanguage()) + ": " + settings.getBroadcastWeather() + "\n"
                     + chatLocalization.tr("broadcast_time", settings.getLanguage()) + ": " + settings.getBroadcastTime() + "\n"
                     + chatLocalization.tr("utc_delta", settings.getLanguage()) + ": " + settings.getUtcDelta() + "\n"
-                    + chatLocalization.tr("cities", settings.getLanguage()) + ": " + settings.getLocations() + "\n"
+                    + chatLocalization.tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
                     )
                     .build();
             case CallBacksConstants.setupLanguage -> sendMessage = SendMessage.builder()

@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -17,9 +20,9 @@ public class ChatSettings {
     private Integer utcDelta;
     private String language;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
-    private List<Location> locations;
+    private Set<Location> locations = new HashSet<>();
 
     public ChatSettings() {
         language = "en";
