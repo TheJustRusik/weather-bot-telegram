@@ -1,18 +1,17 @@
 package dev.kenuki.weathertgbot.utils;
 
 import lombok.AllArgsConstructor;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
-import java.util.List;
+import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
+import static dev.kenuki.weathertgbot.utils.ChatLocalization.tr;
 
 @Component
 @AllArgsConstructor
 public class InlineKeyboards {
-    private final ChatLocalization chatLocalization;
 
     public InlineKeyboardMarkup getMainMenuKeyboard(String langCode) {
         return InlineKeyboardMarkup
@@ -20,21 +19,21 @@ public class InlineKeyboards {
                 .keyboardRow(new InlineKeyboardRow(
                             InlineKeyboardButton
                                     .builder()
-                                    .text(chatLocalization.tr("language", langCode))
-                                    .callbackData(CallBacksConstants.setupLanguage)
+                                    .text(tr("language", langCode))
+                                    .callbackData(setupLanguage)
                                     .build(),
                             InlineKeyboardButton
                                     .builder()
-                                    .text(chatLocalization.tr("settings", langCode))
-                                    .callbackData(CallBacksConstants.setupConfiguration)
+                                    .text(tr("settings", langCode))
+                                    .callbackData(setupConfiguration)
                                     .build()
                         )
                 )
                 .keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("information", langCode))
-                                .callbackData(CallBacksConstants.showInformation)
+                                .text(tr("information", langCode))
+                                .callbackData(showInformation)
                                 .build()
                         )
                 )
@@ -46,13 +45,13 @@ public class InlineKeyboards {
                 .keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("english", langCode))
-                                .callbackData(CallBacksConstants.setEnglish)
+                                .text(tr("english", langCode))
+                                .callbackData(setEnglish)
                                 .build(),
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("russian", langCode))
-                                .callbackData(CallBacksConstants.setRussian)
+                                .text(tr("russian", langCode))
+                                .callbackData(setRussian)
                                 .build()
                 )).build();
     }
@@ -62,18 +61,18 @@ public class InlineKeyboards {
                 .keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("broadcasting", langCode))
-                                .callbackData(CallBacksConstants.setBroadcasting)
+                                .text(tr("broadcasting", langCode))
+                                .callbackData(setBroadcasting)
                                 .build(),
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("broadcasting_time", langCode))
-                                .callbackData(CallBacksConstants.setBroadcastingTime)
+                                .text(tr("broadcasting_time", langCode))
+                                .callbackData(setBroadcastingTime)
                                 .build(),
                         InlineKeyboardButton
                                 .builder()
-                                .text(chatLocalization.tr("utc_delta", langCode))
-                                .callbackData(CallBacksConstants.setUtcDelta)
+                                .text(tr("utc_delta", langCode))
+                                .callbackData(setUtcDelta)
                                 .build()
                 )).build();
     }

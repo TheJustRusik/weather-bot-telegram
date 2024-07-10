@@ -2,20 +2,19 @@ package dev.kenuki.weathertgbot.utils;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
-import dev.kenuki.weathertgbot.WeatherTgbotApplication;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class ChatLocalization {
-    private final Map<String, Map<String, String>> translations;
+    private static Map<String, Map<String, String>> translations;
 
     public ChatLocalization() {
         translations = new HashMap<>();
         loadTranslations();
+        System.err.println("TRANSLATION LOADED");
     }
     private void loadTranslations() {
         try(CSVReader reader = new CSVReader(new FileReader("weather-tgbot/src/main/resources/translations.csv"))) {
@@ -43,7 +42,7 @@ public class ChatLocalization {
      * @param code language code, en - english, ru - russian, etc.
      * @return if there is no "code" language, method search for en lang, if there is no translation for "key", it will return key
      */
-    public String tr(String key, String code) {
+    public static String tr(String key, String code) {
         return translations.getOrDefault(code, translations.get("en"))
                 .getOrDefault(key, key);
     }
