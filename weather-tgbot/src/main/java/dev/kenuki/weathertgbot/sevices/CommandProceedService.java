@@ -14,9 +14,10 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
-import dev.kenuki.weathertgbot.utils.CallBacksConstants;
+
 
 import static dev.kenuki.weathertgbot.utils.ChatLocalization.tr;
+import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
 
 @AllArgsConstructor
 @Service
@@ -70,12 +71,12 @@ public class CommandProceedService {
         SendMessage sendMessage = SendMessage
                 .builder()
                 .chatId(chat_id)
-                .replyToMessageId(message_id)
+                .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                 .text(tr("error", settings.getLanguage()))
                 .build();
 
         switch (call_data) {
-            case CallBacksConstants.setupConfiguration -> sendMessage = SendMessage.builder()
+            case setupConfiguration -> sendMessage = SendMessage.builder()
                     .chatId(chat_id)
                     .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                     .text(tr("your_settings", settings.getLanguage()) + "\n"
@@ -85,27 +86,87 @@ public class CommandProceedService {
                     + tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
                     )
                     .build();
-            case CallBacksConstants.setupLanguage -> sendMessage = SendMessage.builder()
+            case setupLanguage -> sendMessage = SendMessage.builder()
                     .chatId(chat_id)
                     .replyMarkup(inlineKeyboards.getSetupLanguageKeyboard(settings.getLanguage()))
                     .text(tr("choose_language", settings.getLanguage()))
                     .build();
-            case CallBacksConstants.setEnglish -> {
+            case setEnglish -> {
                 settings.setLanguage("en");
                 chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
+                        .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                         .text(tr("english_selected", settings.getLanguage()))
                         .build();
             }
-            case CallBacksConstants.setRussian -> {
+            case setRussian -> {
                 settings.setLanguage("ru");
                 chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
                         .text(tr("russian_selected", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                         .build();
 
+            }
+            case setBroadcasting -> {
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("setup_broadcasting", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getSetBroadcastingKeyboard(settings.getLanguage(), settings.getBroadcastWeather()))
+                        .build();
+            }
+            case enableBroadcasting -> {
+                settings.setBroadcastWeather(true);
+                chatSettingsRepository.save(settings);
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("updated_broadcasting", settings.getLanguage()) + " " + tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
+                        .build();
+            }
+            case disableBroadcasting -> {
+                settings.setBroadcastWeather(false);
+                chatSettingsRepository.save(settings);
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("updated_broadcasting", settings.getLanguage()) + " " + tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
+                        .build();
+            }
+            case showMenu -> {
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("menu", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
+                        .build();
+            }
+            case showInformation -> {
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("info", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
+                        .build();
+            }
+            case setLocation -> {
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("setup_locations", settings.getLanguage()))
+                        .replyMarkup(inlineKeyboards.getSetupLocationsKeyboard(settings.getLanguage(), settings.getLocations().stream().map(Location::getName).toList()))
+                        .build();
+            }
+            case exit -> {
+                try {
+                    telegramClient.execute(DeleteMessage.builder()
+                            .chatId(chat_id)
+                            .messageId(Math.toIntExact(message_id))
+                            .build()
+                    );
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+                return;
             }
         }
 

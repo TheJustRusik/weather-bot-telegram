@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
+import java.util.List;
+
 import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
 import static dev.kenuki.weathertgbot.utils.ChatLocalization.tr;
 
@@ -17,16 +19,16 @@ public class InlineKeyboards {
         return InlineKeyboardMarkup
                 .builder()
                 .keyboardRow(new InlineKeyboardRow(
-                            InlineKeyboardButton
-                                    .builder()
-                                    .text(tr("language", langCode))
-                                    .callbackData(setupLanguage)
-                                    .build(),
-                            InlineKeyboardButton
-                                    .builder()
-                                    .text(tr("settings", langCode))
-                                    .callbackData(setupConfiguration)
-                                    .build()
+                        InlineKeyboardButton
+                                .builder()
+                                .text(tr("language", langCode))
+                                .callbackData(setupLanguage)
+                                .build(),
+                        InlineKeyboardButton
+                                .builder()
+                                .text(tr("settings", langCode))
+                                .callbackData(setupConfiguration)
+                                .build()
                         )
                 )
                 .keyboardRow(new InlineKeyboardRow(
@@ -34,10 +36,13 @@ public class InlineKeyboards {
                                 .builder()
                                 .text(tr("information", langCode))
                                 .callbackData(showInformation)
+                                .build(),
+                        InlineKeyboardButton
+                                .builder()
+                                .text(tr("exit", langCode))
+                                .callbackData(exit)
                                 .build()
-                        )
-                )
-                .build();
+                )).build();
     }
     public InlineKeyboardMarkup getSetupLanguageKeyboard(String langCode) {
         return InlineKeyboardMarkup
@@ -66,14 +71,60 @@ public class InlineKeyboards {
                                 .build(),
                         InlineKeyboardButton
                                 .builder()
-                                .text(tr("broadcasting_time", langCode))
+                                .text(tr("broadcast_time", langCode))
                                 .callbackData(setBroadcastingTime)
-                                .build(),
+                                .build()
+                )).keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton
                                 .builder()
                                 .text(tr("utc_delta", langCode))
                                 .callbackData(setUtcDelta)
+                                .build(),
+                        InlineKeyboardButton
+                                .builder()
+                                .text(tr("locations", langCode))
+                                .callbackData(setLocation)
+                                .build()
+                )).keyboardRow(new InlineKeyboardRow(
+                        InlineKeyboardButton.builder()
+                                .text(tr("show_config", langCode))
+                                .callbackData(setupConfiguration)
+                                .build(),
+                        InlineKeyboardButton.builder()
+                                .text(tr("exit", langCode))
+                                .callbackData(showMenu)
                                 .build()
                 )).build();
+    }
+
+    public InlineKeyboardMarkup getSetBroadcastingKeyboard(String langCode, boolean currentBroadcasting) {
+        return InlineKeyboardMarkup.builder()
+                .keyboardRow(new InlineKeyboardRow(
+                        InlineKeyboardButton.builder()
+                                .text(tr("set_enabled", langCode))
+                                .callbackData(enableBroadcasting)
+                                .build(),
+                        InlineKeyboardButton.builder()
+                                .text(tr("set_disabled", langCode))
+                                .callbackData(disableBroadcasting)
+                                .build()
+                )).build();
+    }
+
+    public InlineKeyboardMarkup getSetupLocationsKeyboard(String langCode, List<String> locations) {
+        return InlineKeyboardMarkup.builder()
+                .keyboard(locations.stream().map(location -> new InlineKeyboardRow(
+                        InlineKeyboardButton.builder()
+                                .text(location + " ❌")
+                                .callbackData("delete_" + location)
+                                .build()
+                )).toList())
+                .keyboardRow(new InlineKeyboardRow(
+                        InlineKeyboardButton.builder()
+                                .text(tr("add_new_location", langCode))
+                                .callbackData("add_new_location")
+                                .build()
+                ))
+                .build();
     }
 }

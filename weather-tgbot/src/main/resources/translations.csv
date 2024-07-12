@@ -1,22 +1,41 @@
 default,en,ru
-language,Language,Язык
-settings,Settings,Настройки
-information,Information,Информация
+language,Language🌍,Язык🌍
+settings,Settings⚙️,Настройки⚙️
+information,Informationℹ️,Информацияℹ️
 hello_banner,"Hello!
 This is weather-bot by @TheJustRusik
 Now you can setup this bot!
 ","Привет!
 Это weather-bot от @TheJustRusik!
 Тут ты можешь настроить его!"
-error,Sorry! Some error occurred.,Простите! Произошла ошибка.
-choose_language,Please choose language!,Пожалуйста выберите язык!
-english,English,English
-russian,Русский,Русский
-russian_selected,Russian language selected!,Выбран русский язык!
-english_selected,English language selected!,Выбран английский язык!
-your_settings,"These are all the current bot settings.
-To change a field, click on the corresponding button.","Это все текущие настройки бота.
+error,Sorry! Some error occurred.❌,Простите! Произошла ошибка.❌
+choose_language,Please choose language!🌍,Пожалуйста выберите язык!🌍
+english,English🇺🇸,English🇺🇸
+russian,Русский🇷🇺,Русский🇷🇺
+russian_selected,Russian language selected!✅,Выбран русский язык!✅
+english_selected,English language selected!✅,Выбран английский язык!✅
+your_settings,"⚠️These are all the current bot settings.
+To change a field, click on the corresponding button.","⚠️Это все текущие настройки бота.
 Чтобы изменить какое то поле, нажмите на соответсвующую кнопку."
-broadcasting,Weather broadcasting,Рассылка о погоде
+broadcasting,Broadcasting,Рассылка
 broadcast_time,Broadcasting hours,Время рассылки
 utc_delta,UTC difference,Разница UTC
+locations,Cities,Города
+setup_broadcasting,Here you can choose whether the application will automatically send weather messages.,Здесь вы можете выбрать будет ли приложение автоматически рассылать сообщения о погоде.
+updated_broadcasting,Automatic broadcasting is: ,Автоматические сообщения:
+enabled,Enabled,Включены
+disabled,Disabled,Отключены
+set_enabled,Enable✅,Включить✅
+set_disabled,Disable❌,Выключить❌
+exit,Exit⛔,Выйти⛔
+show_config,Show config⚙️,Показать конфиг⚙️
+menu,Menu,Меню
+info,"""weather-bot"" was created to make people's lives easier🐥.
+It can automatically notify people about the weather in your favorite chat or PM, and also give you weather-related tips.🌧☂️
+You can configure which cities will be included in the mailing, the time of automatic mailing, or you can turn off the mailing if you so desire.🏙️🕓
+If you like the bot and want to add new features to it, feel free to do so on the project’s Github❤️
+https://github.com/TheJustRusik/weather-bot-telegram","«weather-bot» был создан, чтобы облегчить жизнь людям.🐥
+Он может автоматически уведомлять людей о погоде в вашем любимом чате или в лс, а также давать вам советы, связанные с погодой.🌧☂️
+Вы можете настроить, какие города будут включены в рассылку, время автоматической рассылки, а при желании можете отключить рассылку.🏙🕓
+Если вам нравится бот и вы хотите добавить к нему новые функции, вы можете сделать это на Github проекта❤️
+https://github.com/TheJustRusik/weather-bot-telegram"
