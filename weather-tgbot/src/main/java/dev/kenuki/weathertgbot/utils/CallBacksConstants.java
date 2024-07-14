@@ -14,4 +14,6 @@ final public class CallBacksConstants {
     final public static String exit = "exit";
     final public static String showMenu = "show_menu";
     final public static String setLocation = "set_location";
+    final public static String deleteLocationPrefix = "delete_";
+    final public static String addNewLocation = "add_new_location";
 }

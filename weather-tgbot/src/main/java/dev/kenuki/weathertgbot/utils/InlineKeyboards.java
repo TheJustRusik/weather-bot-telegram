@@ -116,13 +116,13 @@ public class InlineKeyboards {
                 .keyboard(locations.stream().map(location -> new InlineKeyboardRow(
                         InlineKeyboardButton.builder()
                                 .text(location + " ❌")
-                                .callbackData("delete_" + location)
+                                .callbackData(deleteLocationPrefix + location)
                                 .build()
                 )).toList())
                 .keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton.builder()
                                 .text(tr("add_new_location", langCode))
-                                .callbackData("add_new_location")
+                                .callbackData(addNewLocation)
                                 .build()
                 ))
                 .build();

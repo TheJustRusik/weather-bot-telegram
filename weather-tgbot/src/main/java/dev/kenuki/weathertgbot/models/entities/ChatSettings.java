@@ -28,5 +28,8 @@ public class ChatSettings {
         broadcastTime = LocalTime.of(9,0);
         utcDelta = 5;
     }
+    public void removeLocation(final Location location) {
+        locations.remove(location);
+    }
 
 }

@@ -3,10 +3,13 @@ package dev.kenuki.weathertgbot.sevices;
 import dev.kenuki.weathertgbot.models.entities.ChatSettings;
 import dev.kenuki.weathertgbot.models.entities.Location;
 import dev.kenuki.weathertgbot.repositories.ChatSettingsRepository;
+import dev.kenuki.weathertgbot.repositories.LocationRepository;
 import dev.kenuki.weathertgbot.utils.InlineKeyboards;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -21,12 +24,14 @@ import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class CommandProceedService {
     private final InlineKeyboards inlineKeyboards;
     private final TelegramClient telegramClient;
     private final ChatSettingsRepository chatSettingsRepository;
+    private final LocationRepository locationRepository;
 
-    private final Logger log = LoggerFactory.getLogger(CommandProceedService.class);
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void proceedCommand(Update update) {
         String msg = update.getMessage().getText();
@@ -39,7 +44,7 @@ public class CommandProceedService {
             return chatSettings;
         });
 
-        if (msg.startsWith("/weather")) {
+        if (msg.equals("/weather-bot") || msg.equals("/wb")) {
             SendMessage message = SendMessage.builder()
                     .chatId(chat_id)
                     .text(tr("hello_banner", settings.getLanguage()))
@@ -51,7 +56,33 @@ public class CommandProceedService {
             } catch (TelegramApiException e) {
                 log.error(e.getMessage());
             }
+        } else if (msg.startsWith("/wb") && msg.split(" ").length > 1) {
+            String[] subcommands = msg.split(" ");
+            switch (subcommands[1]) {
+                case "addcity" -> {
+                    if (subcommands.length != 3)
+                        return;
+                    SendMessage sendMessage = SendMessage.builder()
+                            .chatId(chat_id)
+                            .text(tr("adding_new_city", settings.getLanguage()))
+                            .build();
+                    DeleteMessage deleteMessage = DeleteMessage.builder()
+                            .chatId(chat_id)
+                            .messageId(update.getMessage().getMessageId())
+                            .build();
+
+                    kafkaTemplate.send("add_city", subcommands[2], "test message");
+
+                    try {
+                        telegramClient.execute(sendMessage);
+                        telegramClient.execute(deleteMessage);
+                    } catch (TelegramApiException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+            }
         }
+
 
 
 
@@ -156,6 +187,12 @@ public class CommandProceedService {
                         .replyMarkup(inlineKeyboards.getSetupLocationsKeyboard(settings.getLanguage(), settings.getLocations().stream().map(Location::getName).toList()))
                         .build();
             }
+            case addNewLocation -> {
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .text(tr("reply_for_add_city", settings.getLanguage()))
+                        .build();
+            }
             case exit -> {
                 try {
                     telegramClient.execute(DeleteMessage.builder()
@@ -168,6 +205,17 @@ public class CommandProceedService {
                 }
                 return;
             }
+        }
+
+        if (call_data.startsWith(deleteLocationPrefix)) {
+            String location = call_data.substring(deleteLocationPrefix.length());
+            settings.removeLocation(locationRepository.findByName(location).get());//get() will always return existing location
+            sendMessage = SendMessage.builder()
+                            .chatId(chat_id)
+                            .text(tr("deleted", settings.getLanguage()))
+                            .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
+                            .build();
+            chatSettingsRepository.save(settings);
         }
 
 
