@@ -8,5 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class AddCityEvent {
+    private Long chatId;
     private String addingCity;
 }

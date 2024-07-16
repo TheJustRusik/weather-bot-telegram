@@ -3,6 +3,7 @@ package org.kenuki.weathertgbot.sevices;
 import org.kenuki.weathertgbot.models.AddCityEvent;
 import org.kenuki.weathertgbot.models.entities.ChatSettings;
 import org.kenuki.weathertgbot.models.entities.Location;
+import org.kenuki.weathertgbot.models.entities.ReplyToAddCityMessage;
 import org.kenuki.weathertgbot.repositories.ChatSettingsRepository;
 import org.kenuki.weathertgbot.repositories.LocationRepository;
 import org.kenuki.weathertgbot.utils.InlineKeyboards;
@@ -38,12 +39,13 @@ public class CommandProceedService {
         String msg = update.getMessage().getText();
         long chat_id = update.getMessage().getChatId();
 
-        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(() -> {
-            ChatSettings chatSettings = new ChatSettings();
-            chatSettings.setId(chat_id);
-            chatSettingsRepository.save(chatSettings);
-            return chatSettings;
-        });
+        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(
+                () -> chatSettingsRepository.save(
+                    ChatSettings.builder()
+                            .id(chat_id)
+                            .build()
+                )
+        );
 
         if (msg.equals("/weather-bot") || msg.equals("/wb")) {
             SendMessage message = SendMessage.builder()
@@ -57,43 +59,16 @@ public class CommandProceedService {
             } catch (TelegramApiException e) {
                 log.error(e.getMessage());
             }
-        } else if (msg.startsWith("/wb") && msg.split(" ").length > 1) {
-            String[] subcommands = msg.split(" ");
-            switch (subcommands[1]) {
-                case "addcity" -> {
-                    if (subcommands.length != 3)
-                        return;
-                    SendMessage sendMessage = SendMessage.builder()
-                            .chatId(chat_id)
-                            .text(ChatLocalization.tr("adding_new_city", settings.getLanguage()))
-                            .build();
-                    DeleteMessage deleteMessage = DeleteMessage.builder()
-                            .chatId(chat_id)
-                            .messageId(update.getMessage().getMessageId())
-                            .build();
+        } else {
+            var replyMessageId = update.getMessage().getReplyToMessage().getMessageId();
+            if (replyMessageId == null) {
+                return;
+            }
+            if (replyMessageId.equals(settings.getReplyToAddCityMessage().getMessageId())) {
+                log.info("Sending to kafka: {}", msg);
 
-                    log.info("Sending to kafka: {}", Arrays.stream(subcommands).toList());
+                kafkaTemplate.send("add_city", Long.toString(settings.getId()), new AddCityEvent(chat_id, msg));
 
-                    kafkaTemplate.send("add_city", Long.toString(settings.getId()), new AddCityEvent(subcommands[2]));
-
-                    try {
-                        telegramClient.execute(sendMessage);
-                        telegramClient.execute(deleteMessage);
-                    } catch (TelegramApiException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-                default -> {
-                    SendMessage sendMessage = SendMessage.builder()
-                            .chatId(chat_id)
-                            .text(ChatLocalization.tr("error_command", settings.getLanguage()) + subcommands[1])
-                            .build();
-                    try {
-                        telegramClient.execute(sendMessage);
-                    } catch (TelegramApiException e) {
-                        log.error(e.getMessage());
-                    }
-                }
             }
         }
 
@@ -202,6 +177,8 @@ public class CommandProceedService {
                         .build();
             }
             case addNewLocation -> {
+                settings.setReplyToAddCityMessage(new ReplyToAddCityMessage(settings.getId(), message_id, settings));
+                chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
                         .text(ChatLocalization.tr("reply_for_add_city", settings.getLanguage()))

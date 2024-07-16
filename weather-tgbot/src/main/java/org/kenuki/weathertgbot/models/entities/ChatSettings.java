@@ -1,7 +1,10 @@
 package org.kenuki.weathertgbot.models.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -9,6 +12,8 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
+@AllArgsConstructor
 public class ChatSettings {
     @Id
     @Column(columnDefinition = "bigint")
@@ -21,6 +26,10 @@ public class ChatSettings {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable
     private Set<Location> locations = new HashSet<>();
+
+    @OneToOne(mappedBy = "chatSettings", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ReplyToAddCityMessage replyToAddCityMessage;
 
     public ChatSettings() {
         language = "en";
