@@ -1,4 +1,4 @@
-package dev.kenuki.weathertgbot.utils;
+package org.kenuki.weathertgbot.utils;
 
 final public class CallBacksConstants {
     final public static String setupLanguage = "setup_language";

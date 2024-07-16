@@ -1,6 +1,6 @@
-package dev.kenuki.weathertgbot.repositories;
+package org.kenuki.weathertgbot.repositories;
 
-import dev.kenuki.weathertgbot.models.entities.Location;
+import org.kenuki.weathertgbot.models.entities.Location;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

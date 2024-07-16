@@ -1,7 +1,7 @@
-package dev.kenuki.weathertgbot.telegram;
+package org.kenuki.weathertgbot.telegram;
 
-import dev.kenuki.weathertgbot.config.TelegramBotConfiguration;
-import dev.kenuki.weathertgbot.sevices.CommandProceedService;
+import org.kenuki.weathertgbot.config.TelegramBotConfiguration;
+import org.kenuki.weathertgbot.sevices.CommandProceedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

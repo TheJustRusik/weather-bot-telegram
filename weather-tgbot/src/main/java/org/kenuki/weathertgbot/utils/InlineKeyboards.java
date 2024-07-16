@@ -1,4 +1,4 @@
-package dev.kenuki.weathertgbot.utils;
+package org.kenuki.weathertgbot.utils;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -8,8 +8,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.List;
 
-import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
-import static dev.kenuki.weathertgbot.utils.ChatLocalization.tr;
+import static org.kenuki.weathertgbot.utils.CallBacksConstants.*;
+import static org.kenuki.weathertgbot.utils.ChatLocalization.tr;
 
 @Component
 @AllArgsConstructor

@@ -1,6 +1,6 @@
-package dev.kenuki.weathertgbot.config;
+package org.kenuki.weathertgbot.config;
 
-import dev.kenuki.weathertgbot.utils.ChatLocalization;
+import org.kenuki.weathertgbot.utils.ChatLocalization;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

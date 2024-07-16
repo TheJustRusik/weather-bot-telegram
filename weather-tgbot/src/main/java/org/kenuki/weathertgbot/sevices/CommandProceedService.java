@@ -1,14 +1,14 @@
-package dev.kenuki.weathertgbot.sevices;
+package org.kenuki.weathertgbot.sevices;
 
-import dev.kenuki.weathertgbot.models.entities.ChatSettings;
-import dev.kenuki.weathertgbot.models.entities.Location;
-import dev.kenuki.weathertgbot.repositories.ChatSettingsRepository;
-import dev.kenuki.weathertgbot.repositories.LocationRepository;
-import dev.kenuki.weathertgbot.utils.InlineKeyboards;
+import org.kenuki.weathertgbot.models.AddCityEvent;
+import org.kenuki.weathertgbot.models.entities.ChatSettings;
+import org.kenuki.weathertgbot.models.entities.Location;
+import org.kenuki.weathertgbot.repositories.ChatSettingsRepository;
+import org.kenuki.weathertgbot.repositories.LocationRepository;
+import org.kenuki.weathertgbot.utils.InlineKeyboards;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.kenuki.weathertgbot.utils.ChatLocalization;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,8 +19,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 
-import static dev.kenuki.weathertgbot.utils.ChatLocalization.tr;
-import static dev.kenuki.weathertgbot.utils.CallBacksConstants.*;
+import java.util.Arrays;
+
+import static org.kenuki.weathertgbot.utils.CallBacksConstants.*;
 
 @AllArgsConstructor
 @Service
@@ -47,7 +48,7 @@ public class CommandProceedService {
         if (msg.equals("/weather-bot") || msg.equals("/wb")) {
             SendMessage message = SendMessage.builder()
                     .chatId(chat_id)
-                    .text(tr("hello_banner", settings.getLanguage()))
+                    .text(ChatLocalization.tr("hello_banner", settings.getLanguage()))
                     .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                     .replyToMessageId(update.getMessage().getMessageId())
                     .build();
@@ -64,18 +65,31 @@ public class CommandProceedService {
                         return;
                     SendMessage sendMessage = SendMessage.builder()
                             .chatId(chat_id)
-                            .text(tr("adding_new_city", settings.getLanguage()))
+                            .text(ChatLocalization.tr("adding_new_city", settings.getLanguage()))
                             .build();
                     DeleteMessage deleteMessage = DeleteMessage.builder()
                             .chatId(chat_id)
                             .messageId(update.getMessage().getMessageId())
                             .build();
 
-                    kafkaTemplate.send("add_city", subcommands[2], "test message");
+                    log.info("Sending to kafka: {}", Arrays.stream(subcommands).toList());
+
+                    kafkaTemplate.send("add_city", Long.toString(settings.getId()), new AddCityEvent(subcommands[2]));
 
                     try {
                         telegramClient.execute(sendMessage);
                         telegramClient.execute(deleteMessage);
+                    } catch (TelegramApiException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                default -> {
+                    SendMessage sendMessage = SendMessage.builder()
+                            .chatId(chat_id)
+                            .text(ChatLocalization.tr("error_command", settings.getLanguage()) + subcommands[1])
+                            .build();
+                    try {
+                        telegramClient.execute(sendMessage);
                     } catch (TelegramApiException e) {
                         log.error(e.getMessage());
                     }
@@ -103,24 +117,24 @@ public class CommandProceedService {
                 .builder()
                 .chatId(chat_id)
                 .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
-                .text(tr("error", settings.getLanguage()))
+                .text(ChatLocalization.tr("error", settings.getLanguage()))
                 .build();
 
         switch (call_data) {
             case setupConfiguration -> sendMessage = SendMessage.builder()
                     .chatId(chat_id)
                     .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
-                    .text(tr("your_settings", settings.getLanguage()) + "\n"
-                    + tr("broadcasting", settings.getLanguage()) + ": " + settings.getBroadcastWeather() + "\n"
-                    + tr("broadcast_time", settings.getLanguage()) + ": " + settings.getBroadcastTime() + "\n"
-                    + tr("utc_delta", settings.getLanguage()) + ": " + settings.getUtcDelta() + "\n"
-                    + tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
+                    .text(ChatLocalization.tr("your_settings", settings.getLanguage()) + "\n"
+                    + ChatLocalization.tr("broadcasting", settings.getLanguage()) + ": " + settings.getBroadcastWeather() + "\n"
+                    + ChatLocalization.tr("broadcast_time", settings.getLanguage()) + ": " + settings.getBroadcastTime() + "\n"
+                    + ChatLocalization.tr("utc_delta", settings.getLanguage()) + ": " + settings.getUtcDelta() + "\n"
+                    + ChatLocalization.tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
                     )
                     .build();
             case setupLanguage -> sendMessage = SendMessage.builder()
                     .chatId(chat_id)
                     .replyMarkup(inlineKeyboards.getSetupLanguageKeyboard(settings.getLanguage()))
-                    .text(tr("choose_language", settings.getLanguage()))
+                    .text(ChatLocalization.tr("choose_language", settings.getLanguage()))
                     .build();
             case setEnglish -> {
                 settings.setLanguage("en");
@@ -128,7 +142,7 @@ public class CommandProceedService {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
                         .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
-                        .text(tr("english_selected", settings.getLanguage()))
+                        .text(ChatLocalization.tr("english_selected", settings.getLanguage()))
                         .build();
             }
             case setRussian -> {
@@ -136,7 +150,7 @@ public class CommandProceedService {
                 chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("russian_selected", settings.getLanguage()))
+                        .text(ChatLocalization.tr("russian_selected", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                         .build();
 
@@ -144,7 +158,7 @@ public class CommandProceedService {
             case setBroadcasting -> {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("setup_broadcasting", settings.getLanguage()))
+                        .text(ChatLocalization.tr("setup_broadcasting", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getSetBroadcastingKeyboard(settings.getLanguage(), settings.getBroadcastWeather()))
                         .build();
             }
@@ -153,7 +167,7 @@ public class CommandProceedService {
                 chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("updated_broadcasting", settings.getLanguage()) + " " + tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
+                        .text(ChatLocalization.tr("updated_broadcasting", settings.getLanguage()) + " " + ChatLocalization.tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                         .build();
             }
@@ -162,35 +176,35 @@ public class CommandProceedService {
                 chatSettingsRepository.save(settings);
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("updated_broadcasting", settings.getLanguage()) + " " + tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
+                        .text(ChatLocalization.tr("updated_broadcasting", settings.getLanguage()) + " " + ChatLocalization.tr( settings.getBroadcastWeather() ? "enabled" : "disabled", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                         .build();
             }
             case showMenu -> {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("menu", settings.getLanguage()))
+                        .text(ChatLocalization.tr("menu", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                         .build();
             }
             case showInformation -> {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("info", settings.getLanguage()))
+                        .text(ChatLocalization.tr("info", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
                         .build();
             }
             case setLocation -> {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("setup_locations", settings.getLanguage()))
+                        .text(ChatLocalization.tr("setup_locations", settings.getLanguage()))
                         .replyMarkup(inlineKeyboards.getSetupLocationsKeyboard(settings.getLanguage(), settings.getLocations().stream().map(Location::getName).toList()))
                         .build();
             }
             case addNewLocation -> {
                 sendMessage = SendMessage.builder()
                         .chatId(chat_id)
-                        .text(tr("reply_for_add_city", settings.getLanguage()))
+                        .text(ChatLocalization.tr("reply_for_add_city", settings.getLanguage()))
                         .build();
             }
             case exit -> {
@@ -212,7 +226,7 @@ public class CommandProceedService {
             settings.removeLocation(locationRepository.findByName(location).get());//get() will always return existing location
             sendMessage = SendMessage.builder()
                             .chatId(chat_id)
-                            .text(tr("deleted", settings.getLanguage()))
+                            .text(ChatLocalization.tr("deleted", settings.getLanguage()))
                             .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                             .build();
             chatSettingsRepository.save(settings);

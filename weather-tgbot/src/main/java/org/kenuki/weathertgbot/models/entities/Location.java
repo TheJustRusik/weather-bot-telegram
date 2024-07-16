@@ -1,4 +1,4 @@
-package dev.kenuki.weathertgbot.models.entities;
+package org.kenuki.weathertgbot.models.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;

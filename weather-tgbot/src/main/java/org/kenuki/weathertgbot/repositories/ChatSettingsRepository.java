@@ -1,6 +1,6 @@
-package dev.kenuki.weathertgbot.repositories;
+package org.kenuki.weathertgbot.repositories;
 
-import dev.kenuki.weathertgbot.models.entities.ChatSettings;
+import org.kenuki.weathertgbot.models.entities.ChatSettings;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

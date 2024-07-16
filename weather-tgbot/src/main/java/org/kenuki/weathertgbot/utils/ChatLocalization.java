@@ -1,22 +1,26 @@
-package dev.kenuki.weathertgbot.utils;
+package org.kenuki.weathertgbot.utils;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class ChatLocalization {
     private static Map<String, Map<String, String>> translations;
 
     public ChatLocalization() {
         translations = new HashMap<>();
-        loadTranslations();
-        System.err.println("TRANSLATION LOADED");
+        var res = loadTranslations();
+        log.info("Translations loaded. Languages: {}, Words: {}", res.languages, res.translationAmount);
     }
-    private void loadTranslations() {
+    private LoadInfo loadTranslations() {
         try(CSVReader reader = new CSVReader(new FileReader("weather-tgbot/src/main/resources/translations.csv"))) {
             String[] headers = reader.readNext();
             if(headers == null) {
@@ -32,8 +36,13 @@ public class ChatLocalization {
                 }
             }
         } catch (CsvValidationException | IOException e) {
-            System.err.println(e.getMessage());
+            log.error("Translation loading error: {}", e.getMessage());
         }
+
+        return LoadInfo.builder()
+                .languages(translations.keySet().stream().toList())
+                .translationAmount(translations.get(translations.keySet().stream().findFirst().get()).size())
+                .build();
     }
 
     /**
@@ -45,5 +54,11 @@ public class ChatLocalization {
     public static String tr(String key, String code) {
         return translations.getOrDefault(code, translations.get("en"))
                 .getOrDefault(key, key);
+    }
+
+    @Builder
+    private static class LoadInfo {
+        private List<String> languages;
+        private int translationAmount;
     }
 }

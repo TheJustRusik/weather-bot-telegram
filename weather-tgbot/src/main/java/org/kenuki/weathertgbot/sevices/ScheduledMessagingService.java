@@ -1,4 +1,4 @@
-package dev.kenuki.weathertgbot.sevices;
+package org.kenuki.weathertgbot.sevices;
 
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
