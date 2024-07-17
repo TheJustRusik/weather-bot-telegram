@@ -45,7 +45,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - 22181:2181
+      - "22181:2181"
   kafka:
     image: confluentinc/cp-kafka:7.5.5
     depends_on:
@@ -54,7 +54,7 @@ services:
     ports:
       - "29092:29092"
     healthcheck:
-      test: [ "CMD", "nc", "-vz", "localhost", "9092" ]
+      test: [ "CMD", "nc", "-vz", "localhost", "29092" ]
       interval: 10s
       timeout: 3s
       retries: 3

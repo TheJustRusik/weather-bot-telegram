@@ -14,10 +14,11 @@ public class KafkaProducer {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     public void confirmAddingCityTransaction(AddCityEvent addCityEvent) {
+        log.info("Confirming add city transaction for chat {}", addCityEvent.getChatId());
         kafkaTemplate.send(
                 "result_add_city",
                 ResultAddCityEvent.builder()
-                        .status("confirm")
+                        .status(new String("confirm"))
                         .addingCity(addCityEvent.getAddingCity())
                         .chatId(addCityEvent.getChatId())
                         .build()
@@ -25,10 +26,11 @@ public class KafkaProducer {
     }
 
     public void rejectAddingCityTransaction(AddCityEvent addCityEvent) {
+        log.info("Rejecting add city transaction for chat {}", addCityEvent.getChatId());
         kafkaTemplate.send(
                 "result_add_city",
                 ResultAddCityEvent.builder()
-                        .status("reject")
+                        .status(new String("reject"))
                         .addingCity(addCityEvent.getAddingCity())
                         .chatId(addCityEvent.getChatId())
                         .build()

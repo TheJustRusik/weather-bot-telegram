@@ -1,5 +1,6 @@
 package org.kenuki.weatherfetcher.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.kenuki.weatherfetcher.messaging.events.AddCityEvent;
 import org.kenuki.weatherfetcher.messaging.events.ResultAddCityEvent;
 import org.kenuki.weatherfetcher.messaging.services.KafkaProducer;
@@ -21,14 +22,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
-
+@Slf4j
 @Service
 public class WeatherService {
     @Value("${open-weather.key}")
     String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final Logger log = LoggerFactory.getLogger(WeatherService.class);
     private final WeatherRepository weatherRepository;
     private final LocationRepository locationRepository;
     private final KafkaProducer kafkaProducer;
@@ -84,20 +84,21 @@ public class WeatherService {
         });
     }
     public void createLocationWeather(AddCityEvent addCityEvent) {
-        locationRepository.findByName(addCityEvent.getAddingCity()).ifPresent((location) ->
-                kafkaProducer.confirmAddingCityTransaction(
-                    ResultAddCityEvent.builder()
-                            .status("confirm")
-                            .addingCity(addCityEvent.getAddingCity())
-                            .chatId(addCityEvent.getChatId())
-                            .build()
-                )
-        );
-        try {
-            fetchLocationWeather(addCityEvent.getAddingCity());
-            locationRepository.save(Location.builder().name(addCityEvent.getAddingCity()).build());
-        } catch (RuntimeException e) {
-            log.warn(e.getMessage());
+        if (locationRepository.findByName(addCityEvent.getAddingCity()).isPresent()) {
+            log.warn("Location already exists {}", addCityEvent.getAddingCity());
+            kafkaProducer.confirmAddingCityTransaction(AddCityEvent.builder()
+                    .chatId(addCityEvent.getChatId())
+                    .addingCity(addCityEvent.getAddingCity())
+                    .build()
+            );
+        } else {
+            log.info("No location {} in location table.", addCityEvent.getAddingCity());
+            try {
+                fetchLocationWeather(addCityEvent.getAddingCity());
+                locationRepository.save(Location.builder().name(addCityEvent.getAddingCity()).build());
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
         }
 
 

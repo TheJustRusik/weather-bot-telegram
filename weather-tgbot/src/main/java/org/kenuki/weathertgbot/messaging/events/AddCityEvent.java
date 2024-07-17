@@ -1,4 +1,4 @@
-package org.kenuki.weatherfetcher.messaging.events;
+package org.kenuki.weathertgbot.messaging.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

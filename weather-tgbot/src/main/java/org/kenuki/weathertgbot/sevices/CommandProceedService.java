@@ -1,6 +1,6 @@
 package org.kenuki.weathertgbot.sevices;
 
-import org.kenuki.weatherfetcher.messaging.events.AddCityEvent;
+import org.kenuki.weathertgbot.messaging.events.AddCityEvent;
 import org.kenuki.weathertgbot.models.entities.ChatSettings;
 import org.kenuki.weathertgbot.models.entities.Location;
 import org.kenuki.weathertgbot.models.entities.ReplyToAddCityMessage;
@@ -116,10 +116,10 @@ public class CommandProceedService {
                     .chatId(chat_id)
                     .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                     .text(tr("your_settings", settings.getLanguage()) + "\n"
-                    + tr("broadcasting", settings.getLanguage()) + ": " + settings.getBroadcastWeather() + "\n"
-                    + tr("broadcast_time", settings.getLanguage()) + ": " + settings.getBroadcastTime() + "\n"
-                    + tr("utc_delta", settings.getLanguage()) + ": " + settings.getUtcDelta() + "\n"
-                    + tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
+                        + tr("broadcasting", settings.getLanguage()) + ": " + settings.getBroadcastWeather() + "\n"
+                        + tr("broadcast_time", settings.getLanguage()) + ": " + settings.getBroadcastTime() + "\n"
+                        + tr("utc_delta", settings.getLanguage()) + ": " + settings.getUtcDelta() + "\n"
+                        + tr("cities", settings.getLanguage()) + ": " + settings.getLocations().stream().map(Location::getName).toList() + "\n"
                     )
                     .build();
             case setupLanguage -> sendMessage = SendMessage.builder()
