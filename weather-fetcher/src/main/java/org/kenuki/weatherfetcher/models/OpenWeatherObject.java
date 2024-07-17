@@ -10,4 +10,5 @@ import java.util.List;
 public class OpenWeatherObject {
     private List<OpenWeather3HoursPrediction> list;
     private OpenWeatherCity city;
+    private String message;
 }

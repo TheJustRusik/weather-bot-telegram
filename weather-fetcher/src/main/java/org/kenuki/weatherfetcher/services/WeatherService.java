@@ -1,16 +1,16 @@
 package org.kenuki.weatherfetcher.services;
 
-import jakarta.annotation.PostConstruct;
-import org.kenuki.weatherfetcher.models.OpenWeather3HoursPrediction;
+import org.kenuki.weatherfetcher.messaging.events.AddCityEvent;
+import org.kenuki.weatherfetcher.messaging.events.ResultAddCityEvent;
+import org.kenuki.weatherfetcher.messaging.services.KafkaProducer;
 import org.kenuki.weatherfetcher.models.OpenWeatherObject;
+import org.kenuki.weatherfetcher.models.entities.Location;
 import org.kenuki.weatherfetcher.models.entities.Weather;
 import org.kenuki.weatherfetcher.repositories.LocationRepository;
 import org.kenuki.weatherfetcher.repositories.WeatherRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.Objects;
 
 
 @Service
@@ -30,10 +31,14 @@ public class WeatherService {
     private final Logger log = LoggerFactory.getLogger(WeatherService.class);
     private final WeatherRepository weatherRepository;
     private final LocationRepository locationRepository;
+    private final KafkaProducer kafkaProducer;
 
-    public WeatherService(WeatherRepository weatherRepository, LocationRepository locationRepository) {
+    public WeatherService(WeatherRepository weatherRepository,
+                          LocationRepository locationRepository,
+                          KafkaProducer kafkaProducer) {
         this.weatherRepository = weatherRepository;
         this.locationRepository = locationRepository;
+        this.kafkaProducer = kafkaProducer;
     }
 
     /**
@@ -47,6 +52,10 @@ public class WeatherService {
         );
     }
     private void fetchLocationWeather(String location) {
+        if (location.contains(" /&?=+_)(*&^%$#@!?/.-=")) {
+            log.warn("Location have bad symbols {}", location);
+            return;
+        }
         String url = "https://api.openweathermap.org/data/2.5/forecast?q="
                 + location + "&appid=" + apiKey;
         log.info("Fetching weather for URL: {}", url);
@@ -55,6 +64,10 @@ public class WeatherService {
         if(response == null) {
             log.warn("Could not fetch weather for URL: {}", url);
             throw new RuntimeException("Could not fetch weather for URL: " + url);
+        }
+        if(Objects.equals(response.getMessage(), "city not found")) {
+            log.warn("Could not fetch weather for City: {}", location);
+            throw new RuntimeException("Could not fetch weather for City: " + location);
         }
 
         response.getList().forEach(weather3HBlock -> {
@@ -69,5 +82,24 @@ public class WeatherService {
             );
             weatherRepository.save(weather);
         });
+    }
+    public void createLocationWeather(AddCityEvent addCityEvent) {
+        locationRepository.findByName(addCityEvent.getAddingCity()).ifPresent((location) ->
+                kafkaProducer.confirmAddingCityTransaction(
+                    ResultAddCityEvent.builder()
+                            .status("confirm")
+                            .addingCity(addCityEvent.getAddingCity())
+                            .chatId(addCityEvent.getChatId())
+                            .build()
+                )
+        );
+        try {
+            fetchLocationWeather(addCityEvent.getAddingCity());
+            locationRepository.save(Location.builder().name(addCityEvent.getAddingCity()).build());
+        } catch (RuntimeException e) {
+            log.warn(e.getMessage());
+        }
+
+
     }
 }

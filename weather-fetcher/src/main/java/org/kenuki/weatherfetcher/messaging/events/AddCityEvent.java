@@ -1,14 +1,14 @@
-package org.kenuki.weathertgbot.models;
+package org.kenuki.weatherfetcher.messaging.events;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
+@NoArgsConstructor
+@SuperBuilder
 public class AddCityEvent {
     private Long chatId;
     private String addingCity;
