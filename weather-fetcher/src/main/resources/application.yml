@@ -3,11 +3,10 @@ spring:
     name: weather-fetcher
   kafka:
     bootstrap-servers: "localhost:29092"
+
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: false
     consumer:
       group-id: "order-2"
       auto-offset-reset: earliest
@@ -15,9 +14,6 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-        spring.json.add.type.headers: false
-
-
   datasource:
     password: super_password
     username: main_user

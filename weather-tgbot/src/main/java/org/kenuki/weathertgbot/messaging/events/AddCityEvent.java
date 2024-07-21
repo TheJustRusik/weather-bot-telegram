@@ -12,4 +12,5 @@ import lombok.experimental.SuperBuilder;
 public class AddCityEvent {
     private Long chatId;
     private String addingCity;
+    private Integer messageId;
 }

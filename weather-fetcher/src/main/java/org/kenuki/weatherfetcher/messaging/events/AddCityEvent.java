@@ -1,8 +1,6 @@
 package org.kenuki.weatherfetcher.messaging.events;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @AllArgsConstructor
@@ -12,4 +10,5 @@ import lombok.experimental.SuperBuilder;
 public class AddCityEvent {
     private Long chatId;
     private String addingCity;
+    private String messageId;
 }

@@ -1,10 +1,8 @@
 package org.kenuki.weathertgbot.models.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -14,6 +12,7 @@ import java.util.Set;
 @Data
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"replyToAddCityMessage", "locations"})
 public class ChatSettings {
     @Id
     @Column(columnDefinition = "bigint")
@@ -27,8 +26,9 @@ public class ChatSettings {
     @JoinTable
     private Set<Location> locations = new HashSet<>();
 
-    @OneToOne(mappedBy = "chatSettings", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "chatSettings")
     @PrimaryKeyJoinColumn
+    @JsonManagedReference
     private ReplyToAddCityMessage replyToAddCityMessage;
 
     public ChatSettings() {

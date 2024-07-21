@@ -10,6 +10,7 @@ import org.kenuki.weathertgbot.utils.InlineKeyboards;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -68,7 +69,7 @@ public class CommandProceedService {
             if (replyMessageId.equals(settings.getReplyToAddCityMessage().getMessageId())) {
                 log.info("Sending to kafka: {}", msg);
 
-                kafkaTemplate.send("add_city", new AddCityEvent(chat_id, msg));
+                kafkaTemplate.send("add_city", new AddCityEvent(chat_id, msg, update.getMessage().getMessageId()));
                 DeleteMessage deleteMessage = DeleteMessage.builder()
                         .chatId(chat_id)
                         .messageId(replyMessageId)

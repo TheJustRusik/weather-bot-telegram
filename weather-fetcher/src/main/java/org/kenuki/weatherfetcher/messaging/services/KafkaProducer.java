@@ -15,12 +15,14 @@ public class KafkaProducer {
 
     public void confirmAddingCityTransaction(AddCityEvent addCityEvent) {
         log.info("Confirming add city transaction for chat {}", addCityEvent.getChatId());
+        log.info("addCityEvent: {}", addCityEvent);
         kafkaTemplate.send(
-                "result_add_city",
+                "add_city",
                 ResultAddCityEvent.builder()
-                        .status(new String("confirm"))
+                        .status("confirm")
                         .addingCity(addCityEvent.getAddingCity())
                         .chatId(addCityEvent.getChatId())
+                        .messageId(addCityEvent.getMessageId())
                         .build()
         );
     }
@@ -28,11 +30,12 @@ public class KafkaProducer {
     public void rejectAddingCityTransaction(AddCityEvent addCityEvent) {
         log.info("Rejecting add city transaction for chat {}", addCityEvent.getChatId());
         kafkaTemplate.send(
-                "result_add_city",
+                "add_city",
                 ResultAddCityEvent.builder()
-                        .status(new String("reject"))
+                        .status("reject")
                         .addingCity(addCityEvent.getAddingCity())
                         .chatId(addCityEvent.getChatId())
+                        .messageId(addCityEvent.getMessageId())
                         .build()
         );
     }
