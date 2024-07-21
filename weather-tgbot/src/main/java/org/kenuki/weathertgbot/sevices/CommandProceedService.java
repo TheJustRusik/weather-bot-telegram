@@ -6,6 +6,7 @@ import org.kenuki.weathertgbot.models.entities.Location;
 import org.kenuki.weathertgbot.models.entities.ReplyToAddCityMessage;
 import org.kenuki.weathertgbot.repositories.ChatSettingsRepository;
 import org.kenuki.weathertgbot.repositories.LocationRepository;
+import org.kenuki.weathertgbot.repositories.ReplyToAddCityMessageRepository;
 import org.kenuki.weathertgbot.utils.InlineKeyboards;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 
+import java.time.LocalTime;
 import java.util.Arrays;
 
 import static org.kenuki.weathertgbot.utils.CallBacksConstants.*;
@@ -33,6 +35,7 @@ public class CommandProceedService {
     private final TelegramClient telegramClient;
     private final ChatSettingsRepository chatSettingsRepository;
     private final LocationRepository locationRepository;
+    private final ReplyToAddCityMessageRepository replyToAddCityMessageRepository;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -42,9 +45,7 @@ public class CommandProceedService {
 
         ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(
                 () -> chatSettingsRepository.save(
-                    ChatSettings.builder()
-                            .id(chat_id)
-                            .build()
+                    new ChatSettings(chat_id)
                 )
         );
 
@@ -61,8 +62,14 @@ public class CommandProceedService {
                 log.error(e.getMessage());
             }
         } else {
-            var replyMessageId = update.getMessage().getReplyToMessage().getMessageId();
-            if (replyMessageId == null) {
+            Integer replyMessageId = null;
+            try {
+                replyMessageId = update.getMessage().getReplyToMessage().getMessageId();
+            }catch (Exception e) {
+                log.error(e.getMessage());
+            }
+
+            if (replyMessageId == null || settings.getReplyToAddCityMessage() == null) {
                 return;
             }
             log.info("Reply message id: {}, in db msg id: {}", replyMessageId, settings.getReplyToAddCityMessage().getMessageId());
@@ -98,12 +105,11 @@ public class CommandProceedService {
         int message_id = callbackQuery.getMessage().getMessageId();
         long chat_id = callbackQuery.getMessage().getChatId();
 
-        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(() -> {
-            ChatSettings chatSettings = new ChatSettings();
-            chatSettings.setId(chat_id);
-            chatSettingsRepository.save(chatSettings);
-            return chatSettings;
-        });
+        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(
+                () -> chatSettingsRepository.save(
+                        new ChatSettings(chat_id)
+                )
+        );
 
         SendMessage sendMessage = SendMessage
                 .builder()
@@ -206,10 +212,12 @@ public class CommandProceedService {
                 try {
                     var msgId = telegramClient.execute(sendMessage).getMessageId();
                     telegramClient.execute(deleteMessage);
-                    settings.setReplyToAddCityMessage(new ReplyToAddCityMessage(settings.getId(), msgId, settings));
+                    final var replyToAddCityMessage = new ReplyToAddCityMessage(settings.getId(), msgId, settings);
+                    settings.setReplyToAddCityMessage(replyToAddCityMessage);
                     chatSettingsRepository.save(settings);
-                } catch (TelegramApiException e) {
+                } catch (Exception e) {
                     log.error(e.getMessage());
+                    e.printStackTrace();
                 }
                 return;
 

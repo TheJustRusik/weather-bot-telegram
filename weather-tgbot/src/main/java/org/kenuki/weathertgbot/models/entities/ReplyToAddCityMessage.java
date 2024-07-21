@@ -9,7 +9,6 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"chatSettings"})
 public class ReplyToAddCityMessage {
     @Id
     @Column(name = "chat_id")
@@ -18,7 +17,7 @@ public class ReplyToAddCityMessage {
     @OneToOne
     @MapsId
     @JoinColumn(name = "chat_id")
-    @JsonBackReference
+    @ToString.Exclude
     private ChatSettings chatSettings;
 
 }

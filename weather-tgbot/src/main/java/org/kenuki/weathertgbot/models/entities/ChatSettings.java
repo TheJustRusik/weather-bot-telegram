@@ -12,7 +12,6 @@ import java.util.Set;
 @Data
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"replyToAddCityMessage", "locations"})
 public class ChatSettings {
     @Id
     @Column(columnDefinition = "bigint")
@@ -28,14 +27,21 @@ public class ChatSettings {
 
     @OneToOne(mappedBy = "chatSettings")
     @PrimaryKeyJoinColumn
-    @JsonManagedReference
-    private ReplyToAddCityMessage replyToAddCityMessage;
+    private ReplyToAddCityMessage replyToAddCityMessage = new ReplyToAddCityMessage();
 
     public ChatSettings() {
         language = "en";
         broadcastWeather = false;
         broadcastTime = LocalTime.of(9,0);
         utcDelta = 5;
+    }
+    public ChatSettings(Long id) {
+        language = "en";
+        broadcastWeather = false;
+        broadcastTime = LocalTime.of(9,0);
+        utcDelta = 5;
+        this.id = id;
+
     }
     public void removeLocation(final Location location) {
         locations.remove(location);
