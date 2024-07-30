@@ -3,10 +3,10 @@ package org.kenuki.weatherfetcher.messaging.events;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@AllArgsConstructor
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
-@SuperBuilder
 public class AddCityEvent {
     private Long chatId;
     private String addingCity;

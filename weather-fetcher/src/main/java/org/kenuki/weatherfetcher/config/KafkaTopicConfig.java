@@ -1,4 +1,4 @@
-package org.kenuki.weathertgbot.config;
+package org.kenuki.weatherfetcher.config;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;

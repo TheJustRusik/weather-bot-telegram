@@ -1,10 +1,9 @@
-package org.kenuki.weathertgbot.config;
+package org.kenuki.weatherfetcher.config;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -15,7 +14,6 @@ import java.util.Map;
 
 @Configuration
 public class KafkaProducerConfig {
-
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> props = new HashMap<>();
@@ -23,14 +21,12 @@ public class KafkaProducerConfig {
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(JsonSerializer.TYPE_MAPPINGS,
-                "AddCityEvent:org.kenuki.weathertgbot.messaging.events.AddCityEvent"
+                "SendMessageEvent:org.kenuki.weatherfetcher.messaging.events.SendMessageEvent, SendReplyMessageEvent:org.kenuki.weatherfetcher.messaging.events.SendReplyMessageEvent"
         );
         return new DefaultKafkaProducerFactory<>(props);
     }
-
     @Bean
     public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
-
 }
