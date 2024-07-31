@@ -1,5 +1,6 @@
 package org.kenuki.weathertgbot.messaging.services;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kenuki.weathertgbot.messaging.events.AddCityEvent;
 import org.kenuki.weathertgbot.messaging.events.SendMessageEvent;
@@ -13,14 +14,12 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@KafkaListener(topics = "telegram_bot", id = "plan")
+@RequiredArgsConstructor
+@KafkaListener(topics = "telegram_bot", id = "group2")
 public class KafkaConsumer {
     @KafkaHandler
     public void handleResultAddCityEvent(SendMessageEvent message) {
         log.info("Recieved resultAddCityEvent: {}, :", message);
     }
-    @KafkaHandler
-    public void handleResultAddCityEvent(SendReplyMessageEvent message) {
-        log.info("Recieved resultAddCityEvent: {}, header:", message);
-    }
+
 }

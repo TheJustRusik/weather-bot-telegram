@@ -1,9 +1,9 @@
-package org.kenuki.weatherfetcher.config;
+package org.kenuki.service1.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.kenuki.weatherfetcher.messaging.events.AddCityEvent;
-import org.kenuki.weatherfetcher.messaging.events.TestEvent;
+import org.kenuki.service1.events.Aevent;
+import org.kenuki.service1.events.Bevent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -28,9 +28,9 @@ public class KafkaConsumerConfig {
         StringJsonMessageConverter converter = new StringJsonMessageConverter();
         DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
         typeMapper.setTypePrecedence(Jackson2JavaTypeMapper.TypePrecedence.TYPE_ID);
-        typeMapper.addTrustedPackages("org.kenuki.weatherfetcher.messaging.events");
+        typeMapper.addTrustedPackages("org.kenuki.service1.events");
         Map<String, Class<?>> mappings = new HashMap<>();
-        mappings.put("AddCityEvent", AddCityEvent.class);
+        mappings.put("Aevent", Aevent.class);
         typeMapper.setIdClassMapping(mappings);
         converter.setTypeMapper(typeMapper);
         return converter;
@@ -44,8 +44,8 @@ public class KafkaConsumerConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
-        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, AddCityEvent.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "org.kenuki.weatherfetcher.messaging.events");
+        props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, Aevent.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "org.kenuki.service1.events");
         return new DefaultKafkaConsumerFactory<>(props);
     }
     @Bean
