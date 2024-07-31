@@ -15,5 +15,3 @@ spring:
     bootstrap-servers: "localhost:29092"
 telegram:
   bot-key: ${secret.telegram-bot-key}
-server:
-  port: 8081

@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 public class ChatSettings {
     @Id
@@ -26,7 +25,7 @@ public class ChatSettings {
 
     @OneToOne(mappedBy = "chatSettings", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private ReplyToAddCityMessage replyToAddCityMessage = new ReplyToAddCityMessage();
+    private ReplyToAddCityMessage replyToAddCityMessage;
 
     public ChatSettings() {
         language = "en";

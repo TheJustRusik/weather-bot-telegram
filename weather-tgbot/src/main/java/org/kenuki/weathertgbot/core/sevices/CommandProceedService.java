@@ -1,13 +1,11 @@
 package org.kenuki.weathertgbot.core.sevices;
 
-import org.kenuki.weathertgbot.core.entities.TestEvent;
 import org.kenuki.weathertgbot.messaging.events.AddCityEvent;
 import org.kenuki.weathertgbot.core.entities.ChatSettings;
 import org.kenuki.weathertgbot.core.entities.Location;
 import org.kenuki.weathertgbot.core.entities.ReplyToAddCityMessage;
 import org.kenuki.weathertgbot.core.repositories.ChatSettingsRepository;
 import org.kenuki.weathertgbot.core.repositories.LocationRepository;
-import org.kenuki.weathertgbot.core.repositories.ReplyToAddCityMessageRepository;
 import org.kenuki.weathertgbot.utils.InlineKeyboards;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,11 +37,15 @@ public class CommandProceedService {
         String msg = update.getMessage().getText();
         long chat_id = update.getMessage().getChatId();
 
-        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(
-                () -> chatSettingsRepository.save(
-                    new ChatSettings(chat_id)
-                )
-        );
+        ChatSettings settings = null;
+        try {
+            settings = chatSettingsRepository.findById(chat_id).orElse(
+                    chatSettingsRepository.save(new ChatSettings(chat_id))
+            );
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
 
         if (msg.equals("/weather-bot") || msg.equals("/wb")) {
             SendMessage message = SendMessage.builder()
@@ -74,7 +76,6 @@ public class CommandProceedService {
                 log.info("Sending to kafka: {}", msg);
 
                 kafkaTemplate.send("fetcher", new AddCityEvent(chat_id, msg, update.getMessage().getMessageId()));
-                kafkaTemplate.send("fetcher", new TestEvent("fd"));
                 DeleteMessage deleteMessage = DeleteMessage.builder()
                         .chatId(chat_id)
                         .messageId(replyMessageId)
@@ -104,10 +105,8 @@ public class CommandProceedService {
         int message_id = callbackQuery.getMessage().getMessageId();
         long chat_id = callbackQuery.getMessage().getChatId();
 
-        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElseGet(
-                () -> chatSettingsRepository.save(
-                        new ChatSettings(chat_id)
-                )
+        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElse(
+                chatSettingsRepository.save(new ChatSettings(chat_id))
         );
 
         SendMessage sendMessage = SendMessage
