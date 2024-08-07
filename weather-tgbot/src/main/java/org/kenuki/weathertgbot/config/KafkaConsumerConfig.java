@@ -31,7 +31,6 @@ public class KafkaConsumerConfig {
         typeMapper.addTrustedPackages("org.kenuki.weathertgbot.messaging.events");
         Map<String, Class<?>> mappings = new HashMap<>();
         mappings.put("SendMessageEvent", SendMessageEvent.class);
-        mappings.put("SendReplyMessageEvent", SendReplyMessageEvent.class);
         typeMapper.setIdClassMapping(mappings);
         converter.setTypeMapper(typeMapper);
         return converter;
@@ -49,12 +48,13 @@ public class KafkaConsumerConfig {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "org.kenuki.weathertgbot.messaging.events");
         return new DefaultKafkaConsumerFactory<>(props);
     }
-
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> kafkaListenerContainerFactory() {
+    public ConcurrentKafkaListenerContainerFactory<String, Object> multiTypeKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         factory.setRecordMessageConverter(messageConverter());
         return factory;
     }
+
 }
+

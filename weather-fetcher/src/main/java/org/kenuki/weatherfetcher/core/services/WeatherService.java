@@ -84,6 +84,7 @@ public class WeatherService {
             chat.addLocation(locationOptional.get());
             chatSettingsRepository.save(chat);
 
+            log.info("Kafka sending SendMessageEvent");
             kafkaTemplate.send("telegram_bot", new SendMessageEvent(addCityEvent.getChatId(), "added_city:" + addCityEvent.getAddingCity()));
         } else {
             log.info("No location {} in location table.", addCityEvent.getAddingCity());
@@ -93,9 +94,11 @@ public class WeatherService {
                 chat.addLocation(newLocation);
                 chatSettingsRepository.save(chat);
 
+                log.info("Kafka sending SendMessageEvent");
                 kafkaTemplate.send("telegram_bot", new SendMessageEvent(addCityEvent.getChatId(), "added_city:" + addCityEvent.getAddingCity()));
             } catch (Exception e) {
                 log.warn(e.getMessage());
+                log.info("Kafka sending SendMessageEvent");
                 kafkaTemplate.send("telegram_bot", new SendMessageEvent(addCityEvent.getChatId(), "not_added_city:" + addCityEvent.getAddingCity()));
             }
         }
