@@ -39,9 +39,11 @@ public class CommandProceedService {
 
         ChatSettings settings = null;
         try {
-            settings = chatSettingsRepository.findById(chat_id).orElse(
-                    chatSettingsRepository.save(new ChatSettings(chat_id))
-            );
+
+            if (chatSettingsRepository.findById(chat_id).isPresent())
+                settings = chatSettingsRepository.findById(chat_id).get();
+            else
+                settings = new ChatSettings(chat_id);
         }catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -105,9 +107,16 @@ public class CommandProceedService {
         int message_id = callbackQuery.getMessage().getMessageId();
         long chat_id = callbackQuery.getMessage().getChatId();
 
-        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElse(
-                chatSettingsRepository.save(new ChatSettings(chat_id))
-        );
+//        ChatSettings settings = chatSettingsRepository.findById(chat_id).orElse(
+//                chatSettingsRepository.save(new ChatSettings(chat_id))
+//        );
+        ChatSettings settings;
+        if (chatSettingsRepository.findById(chat_id).isPresent())
+            settings = chatSettingsRepository.findById(chat_id).get();
+        else
+            settings = new ChatSettings(chat_id);
+
+
 
         SendMessage sendMessage = SendMessage
                 .builder()

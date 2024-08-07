@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.kenuki.weather-fetcher.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.kenuki.weather-fetcher.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/org.kenuki.weather-tgbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/org.kenuki.weather-tgbot.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/weather-bot.iml" filepath="$PROJECT_DIR$/weather-bot.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather-fetcher.main.iml" filepath="$PROJECT_DIR$/.idea/modules/weather-fetcher.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/weather-tgbot.main.iml" filepath="$PROJECT_DIR$/.idea/modules/weather-tgbot.main.iml" />
     </modules>
   </component>
 </project>

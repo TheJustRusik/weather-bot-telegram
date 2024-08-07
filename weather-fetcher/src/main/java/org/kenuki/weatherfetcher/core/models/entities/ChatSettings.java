@@ -1,9 +1,7 @@
 package org.kenuki.weatherfetcher.core.models.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -11,7 +9,6 @@ import java.util.Set;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 public class ChatSettings {
     @Id
@@ -26,6 +23,9 @@ public class ChatSettings {
     @JoinTable
     private Set<Location> locations = new HashSet<>();
 
+    @OneToOne(mappedBy = "chatSettings", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ReplyToAddCityMessage replyToAddCityMessage;
 
     public ChatSettings() {
         language = "en";

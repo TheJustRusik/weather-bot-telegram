@@ -19,7 +19,7 @@ public class KafkaConsumer {
 
     @KafkaHandler
     public void addCityTransaction(AddCityEvent addCityEvent) {
-        log.info("Message received, message: {}", addCityEvent);
+        log.info("Message received: {}", addCityEvent);
         weatherService.createLocationWeather(addCityEvent);
     }
 }

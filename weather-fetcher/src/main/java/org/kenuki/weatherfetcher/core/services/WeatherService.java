@@ -48,7 +48,7 @@ public class WeatherService {
     private void fetchLocationWeather(String location) {
         if (location.contains(" /&?=+_)(*&^%$#@!?/.-=")) {
             log.warn("Location have bad symbols {}", location);
-            return;
+            throw new RuntimeException("Could not fetch weather for City: " + location);
         }
         String url = "https://api.openweathermap.org/data/2.5/forecast?q="
                 + location + "&appid=" + apiKey;
@@ -58,8 +58,7 @@ public class WeatherService {
         if(response == null) {
             log.warn("Could not fetch weather for URL: {}", url);
             throw new RuntimeException("Could not fetch weather for URL: " + url);
-        }
-        if(Objects.equals(response.getMessage(), "city not found")) {
+        }else if("city not found".equals(response.getMessage())) {
             log.warn("Could not fetch weather for City: {}", location);
             throw new RuntimeException("Could not fetch weather for City: " + location);
         }
@@ -79,6 +78,11 @@ public class WeatherService {
     }
     public void createLocationWeather(AddCityEvent addCityEvent) {
         var locationOptional = locationRepository.findByName(addCityEvent.getAddingCity());
+        try {
+            var chat = chatSettingsRepository.findById(addCityEvent.getChatId()).orElseThrow();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         var chat = chatSettingsRepository.findById(addCityEvent.getChatId()).orElseThrow();
         if (locationOptional.isPresent()) {
             chat.addLocation(locationOptional.get());
