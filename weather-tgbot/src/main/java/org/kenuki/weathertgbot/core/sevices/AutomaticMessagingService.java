@@ -1,28 +1,28 @@
 package org.kenuki.weathertgbot.core.sevices;
 
 import lombok.AllArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
+import lombok.extern.slf4j.Slf4j;
+import org.kenuki.weathertgbot.messaging.events.SendMessageEvent;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
+@Slf4j
 @Service
 @AllArgsConstructor
-public class ScheduledMessagingService {
+public class AutomaticMessagingService {
     private final TelegramClient telegramClient;
 
-    @Scheduled(cron = "0 0 * * * *")
-    public void sendMessage() {
-        SendMessage sendMessage = SendMessage
-                .builder()
-                .chatId(1L)
-                .text("This is broadcast message every time when second = 0 and minutes = 0 (Every hour)")
+    public void sendOfflineMessage(SendMessageEvent event) {
+        SendMessage sendMessage = SendMessage.builder()
+                .text(event.getText())
+                .chatId(event.getChatId())
                 .build();
         try {
             telegramClient.execute(sendMessage);
         } catch (TelegramApiException e) {
-            throw new RuntimeException(e);
+            log.error(e.getMessage());
         }
     }
 }
