@@ -248,7 +248,7 @@ public class CommandProceedService {
             settings.removeLocation(locationRepository.findByName(location).get());//get() will always return existing location
             sendMessage = SendMessage.builder()
                             .chatId(chat_id)
-                            .text(tr("deleted", settings.getLanguage()))
+                            .text(tr("deleted_location", settings.getLanguage()) + " " + location)
                             .replyMarkup(inlineKeyboards.getSetupConfigurationKeyboard(settings.getLanguage()))
                             .build();
             chatSettingsRepository.save(settings);
