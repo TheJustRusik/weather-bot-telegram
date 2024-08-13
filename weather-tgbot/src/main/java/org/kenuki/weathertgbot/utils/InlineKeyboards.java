@@ -50,6 +50,11 @@ public class InlineKeyboards {
                 .keyboardRow(new InlineKeyboardRow(
                         InlineKeyboardButton
                                 .builder()
+                                .text(tr("kazakh", langCode))
+                                .callbackData(setKazakh)
+                                .build(),
+                        InlineKeyboardButton
+                                .builder()
                                 .text(tr("english", langCode))
                                 .callbackData(setEnglish)
                                 .build(),

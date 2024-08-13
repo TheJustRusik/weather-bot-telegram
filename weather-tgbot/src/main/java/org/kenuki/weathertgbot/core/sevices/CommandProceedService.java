@@ -1,5 +1,6 @@
 package org.kenuki.weathertgbot.core.sevices;
 
+import org.kenuki.weathertgbot.core.repositories.WeatherRepository;
 import org.kenuki.weathertgbot.messaging.events.AddCityEvent;
 import org.kenuki.weathertgbot.core.entities.ChatSettings;
 import org.kenuki.weathertgbot.core.entities.Location;
@@ -19,8 +20,14 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+
 import static org.kenuki.weathertgbot.utils.CallBacksConstants.*;
 import static org.kenuki.weathertgbot.utils.ChatLocalization.tr;
+import static org.kenuki.weathertgbot.utils.CommandConstants.*;
 
 @AllArgsConstructor
 @Service
@@ -30,6 +37,7 @@ public class CommandProceedService {
     private final TelegramClient telegramClient;
     private final ChatSettingsRepository chatSettingsRepository;
     private final LocationRepository locationRepository;
+    private final WeatherRepository weatherRepository;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
@@ -39,17 +47,17 @@ public class CommandProceedService {
 
         ChatSettings settings = null;
         try {
-
             if (chatSettingsRepository.findById(chat_id).isPresent())
                 settings = chatSettingsRepository.findById(chat_id).get();
             else
                 settings = new ChatSettings(chat_id);
         }catch (Exception e) {
             log.error(e.getMessage());
+            return;
         }
 
 
-        if (msg.equals("/weather-bot") || msg.equals("/wb")) {
+        if (COMMAND_WEATHER_BOT.contains(msg)) {
             SendMessage message = SendMessage.builder()
                     .chatId(chat_id)
                     .text(tr("hello_banner", settings.getLanguage()))
@@ -61,6 +69,13 @@ public class CommandProceedService {
             } catch (TelegramApiException e) {
                 log.error(e.getMessage());
 
+            }
+        } else if(COMMAND_WEATHER_SHOW.contains(msg)) {
+            var message = getWeatherMessage(chat_id, settings);
+            try {
+                telegramClient.execute(message);
+            } catch (TelegramApiException e) {
+                log.error(e.getMessage());
             }
         } else {
             Integer replyMessageId = null;
@@ -102,6 +117,22 @@ public class CommandProceedService {
 
 
     }
+
+    private SendMessage getWeatherMessage(long chatId, ChatSettings settings) {
+        var cities = settings.getLocations();
+        LocalDate localDate = LocalDate.now(ZoneId.of("UTC" + (settings.getUtcDelta() >= 0 ? "+" : "") + settings.getUtcDelta()));
+        Timestamp timestamp = Timestamp.valueOf(localDate.atStartOfDay());
+        var weathers = cities.stream().map(
+                city -> weatherRepository.findWeathersByCityAndDate(city.getName(), timestamp)
+        ).toList();
+
+
+        return SendMessage.builder()
+                .text(weathers.toString())
+                .chatId(chatId)
+                .build();
+    }
+
     public void proceedCallback(CallbackQuery callbackQuery) {
         String call_data = callbackQuery.getData();
         int message_id = callbackQuery.getMessage().getMessageId();
@@ -141,6 +172,15 @@ public class CommandProceedService {
                     .replyMarkup(inlineKeyboards.getSetupLanguageKeyboard(settings.getLanguage()))
                     .text(tr("choose_language", settings.getLanguage()))
                     .build();
+            case setKazakh -> {
+                settings.setLanguage("kz");
+                chatSettingsRepository.save(settings);
+                sendMessage = SendMessage.builder()
+                        .chatId(chat_id)
+                        .replyMarkup(inlineKeyboards.getMainMenuKeyboard(settings.getLanguage()))
+                        .text(tr("kazakh_selected", settings.getLanguage()))
+                        .build();
+            }
             case setEnglish -> {
                 settings.setLanguage("en");
                 chatSettingsRepository.save(settings);

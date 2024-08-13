@@ -14,26 +14,26 @@ services:
     volumes:
       - main-db-data:/var/lib/postgresql/data
     restart: unless-stopped
-  weather-fetcher:
-    container_name: weather-bot-fetcher
-    build:
-      context: .
-      dockerfile: weather-fetcher/Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - weather_database
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
-  weather-tgbot:
-    container_name: weather-bot-tgbot
-    build:
-      context: .
-      dockerfile: weather-tgbot/Dockerfile
-    depends_on:
-      - weather_database
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+#  weather-fetcher:
+#    container_name: weather-bot-fetcher
+#    build:
+#      context: .
+#      dockerfile: weather-fetcher/Dockerfile
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - weather_database
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+#  weather-tgbot:
+#    container_name: weather-bot-tgbot
+#    build:
+#      context: .
+#      dockerfile: weather-tgbot/Dockerfile
+#    depends_on:
+#      - weather_database
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.5
     healthcheck:

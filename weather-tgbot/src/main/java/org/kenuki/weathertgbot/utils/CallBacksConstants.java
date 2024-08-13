@@ -4,6 +4,7 @@ final public class CallBacksConstants {
     final public static String setupLanguage = "setup_language";
     final public static String setupConfiguration = "setup_configuration";
     final public static String showInformation = "show_information";
+    final public static String setKazakh = "set_kazakh";
     final public static String setEnglish = "set_english";
     final public static String setRussian = "set_russian";
     final public static String setBroadcasting = "set_broadcasting";

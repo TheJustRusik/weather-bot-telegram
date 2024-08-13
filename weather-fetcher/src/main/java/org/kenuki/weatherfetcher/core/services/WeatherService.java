@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kenuki.weatherfetcher.core.repositories.ChatSettingsRepository;
 import org.kenuki.weatherfetcher.messaging.events.AddCityEvent;
-import org.kenuki.weatherfetcher.core.models.OpenWeatherObject;
+import org.kenuki.weatherfetcher.core.models.openweather.OpenWeatherObject;
 import org.kenuki.weatherfetcher.core.models.entities.Location;
 import org.kenuki.weatherfetcher.core.models.entities.Weather;
 import org.kenuki.weatherfetcher.core.repositories.LocationRepository;
@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.Date;
-import java.util.Objects;
 
 @Slf4j
 @Service

@@ -1,8 +1,7 @@
-package org.kenuki.weatherfetcher.core.models.entities;
+package org.kenuki.weathertgbot.core.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.util.Date;
 

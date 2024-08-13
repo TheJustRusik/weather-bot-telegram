@@ -1,4 +1,4 @@
-package org.kenuki.weatherfetcher.core.models;
+package org.kenuki.weatherfetcher.core.models.openweather;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
