@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,11 @@ public class ChatLocalization {
         log.info("Translations loaded. Languages: {}, Words: {}", res.languages, res.translationAmount);
     }
     private LoadInfo loadTranslations() {
-        try(CSVReader reader = new CSVReader(new FileReader("weather-tgbot/src/main/resources/translations.csv"))) {
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        try(InputStream inputStream = classLoader.getResourceAsStream("translations.csv")) {
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            CSVReader reader = new CSVReader(inputStreamReader);
             String[] headers = reader.readNext();
             if(headers == null) {
                 throw new CsvValidationException("No translations were found");
