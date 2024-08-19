@@ -1,5 +1,7 @@
 package org.kenuki.weathertgbot.core.sevices;
 
+import lombok.NonNull;
+import org.kenuki.weathertgbot.core.entities.Weather;
 import org.kenuki.weathertgbot.core.repositories.WeatherRepository;
 import org.kenuki.weathertgbot.messaging.events.AddCityEvent;
 import org.kenuki.weathertgbot.core.entities.ChatSettings;
@@ -21,9 +23,14 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
 
 import static org.kenuki.weathertgbot.utils.CallBacksConstants.*;
 import static org.kenuki.weathertgbot.utils.ChatLocalization.tr;
@@ -71,12 +78,14 @@ public class CommandProceedService {
 
             }
         } else if(COMMAND_WEATHER_SHOW.contains(msg)) {
-            var message = getWeatherMessage(chat_id, settings);
-            try {
-                telegramClient.execute(message);
-            } catch (TelegramApiException e) {
-                log.error(e.getMessage());
-            }
+            var message = getWeatherMessage(settings);
+            message.forEach(method -> {
+                try {
+                    telegramClient.execute(method);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } else {
             Integer replyMessageId = null;
             try {
@@ -118,19 +127,51 @@ public class CommandProceedService {
 
     }
 
-    private SendMessage getWeatherMessage(long chatId, ChatSettings settings) {
+    private List<SendMessage> getWeatherMessage(ChatSettings settings) {
         var cities = settings.getLocations();
-        LocalDate localDate = LocalDate.now(ZoneId.of("UTC" + (settings.getUtcDelta() >= 0 ? "+" : "") + settings.getUtcDelta()));
-        Timestamp timestamp = Timestamp.valueOf(localDate.atStartOfDay());
-        var weathers = cities.stream().map(
-                city -> weatherRepository.findWeathersByCityAndDate(city.getName(), timestamp)
-        ).toList();
 
+        Date from = new Date();
+        Date to = new Date(from.getTime() + 86_400_000);
 
-        return SendMessage.builder()
-                .text(weathers.toString())
-                .chatId(chatId)
-                .build();
+        List<List<Weather>> cityWeathers = new ArrayList<>();
+
+        try {
+            for (Location city : cities) {
+                var l = weatherRepository.findAllByCityAndDateBetween(city.getName(), from, to);
+                cityWeathers.add(l);
+            }
+        }catch (Exception e) {
+            log.error(e.getMessage());
+        }
+
+        var messages = new ArrayList<SendMessage>(cityWeathers.stream().map(
+                weathers -> SendMessage.builder()
+                        .chatId(settings.getId())
+                        .text(generateMessage(weathers, settings.getLanguage(), weathers.get(0).getCity(), settings.getUtcDelta()))
+                        .build()
+        ).toList());
+        if (messages.isEmpty()) {
+             messages.add(
+                     SendMessage.builder()
+                             .chatId(settings.getId())
+                             .text(tr("no_weathers", settings.getLanguage()))
+                             .build()
+             );
+        }
+        return messages;
+    }
+
+    private @NonNull String generateMessage(List<Weather> weathers, String locale, String city, Integer timezone) {
+        StringBuilder message = new StringBuilder();
+        SimpleDateFormat weatherTimeFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        var timeZone = TimeZone.getTimeZone("GMT" + (timezone > 0 ? "+" : "") + timezone);
+        dateFormat.setTimeZone(timeZone);
+        weatherTimeFormat.setTimeZone(timeZone);
+
+        message.append(tr("weather_for", locale)).append(" ").append(city).append(" ").append(tr("date", locale)).append(" ").append(dateFormat.format(new Date()));
+        weathers.forEach(weather -> message.append("\n").append(weatherTimeFormat.format(weather.getDate())).append(" ").append(weather.getWeather()));
+        return message.toString();
     }
 
     public void proceedCallback(CallbackQuery callbackQuery) {

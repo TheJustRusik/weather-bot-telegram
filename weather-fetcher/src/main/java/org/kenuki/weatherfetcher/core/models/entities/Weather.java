@@ -11,15 +11,17 @@ import java.util.Date;
 @Table(uniqueConstraints = {
         @UniqueConstraint(columnNames = {"city", "date"})
 })
+@IdClass(WeatherPK.class)
 public class Weather {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private String city;
+    @Id
+    @Column(columnDefinition = "timestamp")
+    private Date date;
+
     private String country;
     private String weather;
     private String weather_description;
     private Double wind_speed;
-    @Column(columnDefinition = "timestamp")
-    private Date date;
+
 }

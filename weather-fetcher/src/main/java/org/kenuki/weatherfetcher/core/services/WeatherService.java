@@ -35,6 +35,14 @@ public class WeatherService {
     private final ChatSettingsRepository chatSettingsRepository;
 
     /**
+     * Self clearing
+     */
+    @Scheduled(cron = "0 0 12 *  * 0")
+    public void clearWeather() {
+        weatherRepository.deleteAllByDateBefore(new Date(new Date().getTime() - 86_400_000 * 2));
+    }
+
+    /**
     * <b>This method will run every day at 00:00</b>
     */
     @Scheduled(cron = "0 0 0 * * *")

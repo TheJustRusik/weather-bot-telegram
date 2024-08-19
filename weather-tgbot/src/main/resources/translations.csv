@@ -63,3 +63,5 @@ add_new_location,Add a new city,Добавить новый город,Жаңа 
 deleted_location,✅Deleted city:,✅Удалён город:,✅Қала жойылды:
 kazakh_selected,Kazakh language selected✅,Выбран казахский язык✅,Таңдалған қазақ тілі✅
 kazakh,Қазақша🇰🇿,Қазақша🇰🇿,Қазақша🇰🇿
+weather_for,⛅Weather for city:,⛅Погода для города:,⛅Қала үшін ауа райы:
+date,🕔Date:,🕔Дата:,🕔Күні:
