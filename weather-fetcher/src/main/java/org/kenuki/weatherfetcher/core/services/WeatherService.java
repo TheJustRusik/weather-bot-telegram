@@ -39,7 +39,12 @@ public class WeatherService {
      */
     @Scheduled(cron = "0 0 12 *  * 0")
     public void clearWeather() {
-        weatherRepository.deleteAllByDateBefore(new Date(new Date().getTime() - 86_400_000 * 2));
+        try {
+            weatherRepository.deleteAllByDateBefore(new Date(new Date().getTime() - 86_400_000 * 2));
+            log.info("Deleted old weather records.");
+        } catch (Exception e) {
+            log.error("Failed to delete old weather records", e);
+        }
     }
 
     /**
