@@ -43,7 +43,7 @@ jobs:
       run: ls
 
     - name: Build with Gradle
-      run: cd weather-tgbot && ./gradlew build
+      run: cd weather-tgbot && chmod +x gradlew && ./gradlew build
 
     # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
     # the publishing section of your build.gradle
