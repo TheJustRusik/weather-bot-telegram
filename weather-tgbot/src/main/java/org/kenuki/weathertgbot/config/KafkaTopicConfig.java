@@ -1,5 +1,6 @@
 package org.kenuki.weathertgbot.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,14 +11,16 @@ import org.springframework.kafka.core.KafkaAdmin;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Configuration
 public class KafkaTopicConfig {
-    @Value(value = "${spring.kafka.bootstrap-servers}")
-    private String bootstrapAddress = "localhost:29092";
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String bootstrapAddress;
 
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
+        log.info("Kafka bootstrap address: {}", bootstrapAddress);
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
         return new KafkaAdmin(configs);

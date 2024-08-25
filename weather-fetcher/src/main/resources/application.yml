@@ -2,7 +2,7 @@ spring:
   application:
     name: weather-fetcher
   kafka:
-    bootstrap-servers: "localhost:29092"
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
   datasource:
     password: super_password
     username: main_user

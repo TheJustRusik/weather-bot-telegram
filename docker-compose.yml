@@ -25,6 +25,7 @@ services:
       - weather_database
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
   weather-tgbot:
     container_name: weather-bot-tgbot
     build:
@@ -34,6 +35,8 @@ services:
       - weather_database
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.5
     healthcheck:
@@ -48,11 +51,13 @@ services:
       - "22181:2181"
   kafka:
     image: confluentinc/cp-kafka:7.5.5
+    container_name: kafffka
     depends_on:
       zookeeper:
         condition: service_healthy
     ports:
       - "29092:29092"
+      - "9092:9092"
     healthcheck:
       test: [ "CMD", "nc", "-vz", "localhost", "29092" ]
       interval: 10s
@@ -62,7 +67,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: OUTSIDE://:29092,INTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://localhost:29092,INTERNAL://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: OUTSIDE://kafffka:29092,INTERNAL://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -77,7 +82,7 @@ services:
         condition: service_healthy
     environment:
       KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafffka:29092
 
 
 
