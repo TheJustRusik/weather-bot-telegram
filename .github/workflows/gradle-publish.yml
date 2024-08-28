@@ -55,6 +55,8 @@ jobs:
 
     - name: Upload weather-tgbot
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: weather-tgbot/build/libs/weather-tgbot-0.0.1-SNAPSHOT.jar
@@ -62,6 +64,8 @@ jobs:
         asset_content_type: application/java-archive
     - name: Upload weather-fetcher
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: weather-fetcher/build/libs/weather-fetcher-0.0.1-SNAPSHOT.jar
