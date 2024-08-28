@@ -57,13 +57,13 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /weather-tgbot/build/libs/*.jar
+        asset_path: weather-tgbot/build/libs/weather-tgbot-0.0.1-SNAPSHOT.jar
         asset_name: tgbot.jar
         asset_content_type: application/java-archive
     - name: Upload weather-fetcher
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: /weather-fetcher/build/libs/*.jar
+        asset_path: weather-fetcher/build/libs/weather-fetcher-0.0.1-SNAPSHOT.jar
         asset_name: fetcher.jar
         asset_content_type: application/java-archive
