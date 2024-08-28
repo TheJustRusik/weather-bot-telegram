@@ -7,8 +7,6 @@
 
 name: Gradle Package
 
-permissions:
-  contents: write
 
 on:
   push:
@@ -23,7 +21,7 @@ jobs:
 
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
