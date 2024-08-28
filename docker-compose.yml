@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: super_password
       POSTGRES_DB: main_db
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - main-db-data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: weather-fetcher/Dockerfile
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       - weather_database
     environment:
@@ -48,7 +48,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     ports:
-      - "22181:2181"
+      - "127.0.0.1:22181:2181"
   kafka:
     image: confluentinc/cp-kafka:7.5.5
     container_name: kafffka
@@ -56,8 +56,8 @@ services:
       zookeeper:
         condition: service_healthy
     ports:
-      - "29092:29092"
-      - "9092:9092"
+      - "127.0.0.1:29092:29092"
+      - "127.0.0.1:9092:9092"
     healthcheck:
       test: [ "CMD", "nc", "-vz", "localhost", "29092" ]
       interval: 10s
@@ -75,7 +75,7 @@ services:
     image: provectuslabs/kafka-ui
     container_name: kafka-ui
     ports:
-      - "8081:8080"
+      - "127.0.0.1:8081:8080"
     restart: always
     depends_on:
       kafka:
