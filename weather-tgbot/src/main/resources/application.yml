@@ -9,10 +9,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  config:
-    import: keys.yml
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
-
+  config:
+    import: optional:keys.yml
 telegram:
-  bot-key: ${secret.telegram-bot-key}
+  bot-key: ${TELEGRAM_BOT_KEY:${secret.telegram-bot-key}}

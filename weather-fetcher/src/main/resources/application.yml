@@ -11,8 +11,8 @@ spring:
     hibernate:
       ddl-auto: update
   config:
-    import: keys.yml
+    import: optional:keys.yml
 open-weather:
-  key: ${secret.open-weather-key}
+  key: ${OPEN_WEATHER_KEY:${secret.open-weather-key}}
 server:
   port: 8082

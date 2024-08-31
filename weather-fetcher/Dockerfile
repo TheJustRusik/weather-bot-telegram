@@ -1,17 +1,16 @@
-FROM gradle:jdk17 as builder
-
-WORKDIR /app
-
-COPY ../weather-fetcher /app
-
-RUN gradle bootJar --no-daemon
-
-FROM openjdk:17
+FROM openjdk:17-jdk-slim
 
 EXPOSE 8080
 
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
+RUN apt-get update && apt-get install -y wget curl
 
-CMD ["java", "-jar", "app.jar"]
+RUN curl -s https://api.github.com/repos/TheJustRusik/weather-bot-telegram/releases/latest \
+    | grep fetcher.jar \
+    | tail -n 1 \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -qi -
+
+CMD ["java", "-jar", "fetcher.jar"]

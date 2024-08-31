@@ -1,17 +1,16 @@
-FROM gradle:jdk17 as builder
+FROM openjdk:17-jdk-slim
+
+EXPOSE 8080
 
 WORKDIR /app
 
-COPY ../weather-tgbot /app
+RUN apt-get update && apt-get install -y wget curl
 
-RUN gradle bootJar --no-daemon
+RUN curl -s https://api.github.com/repos/TheJustRusik/weather-bot-telegram/releases/latest \
+    | grep tgbot.jar \
+    | tail -n 1 \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -qi -
 
-FROM openjdk:17
-
-EXPOSE 8081
-
-WORKDIR /app
-
-COPY --from=builder /app/build/libs/*.jar /app/app.jar
-
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "tgbot.jar"]

@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: super_password
       POSTGRES_DB: main_db
     ports:
-      - "127.0.0.1:5433:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - main-db-data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -26,6 +26,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - OPEN_WEATHER_KEY=${OPEN_WEATHER_KEY}
   weather-tgbot:
     container_name: weather-bot-tgbot
     build:
@@ -36,6 +37,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://weather_database/main_db
       - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - TELEGRAM_BOT_KEY=${TELEGRAM_BOT_KEY}
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.5
